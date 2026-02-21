@@ -1,96 +1,131 @@
 # Bookmark App — Technology Stack
 
-**Recommended Architecture · February 2026**
+**Frontend / React Core**  
 
----
+- React + Vite  
+- React Router v7  
+- base ui  
+- tabler  
+- dnd-kit  
+- WXT (Web Extension Tools)  
 
-## Stack Philosophy
+**State & Data Management**  
 
-TypeScript throughout the entire codebase eliminates type mismatches between frontend and backend. The client is built with React + Vite and served as static files directly from the Express server, keeping deployment simple — one Docker container, no separate CDN origin needed. Bun replaces Node.js as the runtime and package manager for significantly faster installs and script execution. All choices prioritize developer velocity in Phases 1–2, with clear upgrade paths for Phase 3–4 scale.
+- Zustand  
+- TanStack Query  
+- TanStack Hotkeys  
 
-**Estimated MVP infra cost (<1k users): $0–$50/month** using free tiers of Supabase, Upstash, and Sentry.
+**Schema & Validation**  
 
----
+- Zod  
 
-## Frontend
+**Backend / Server**  
 
-| Category | Technology | Rationale |
-|---|---|---|
-| Framework | React + Vite | Fast HMR in dev; outputs optimized static files served by Express |
-| Routing | React Router v7 | File-based or config routing; pairs naturally with Vite |
-| Language | TypeScript | Type safety across the entire codebase |
-| Styling | Oxfmt + shadcn/ui | Opinionated formatting with accessible, headless UI primitives |
-| Drag & Drop | dnd-kit | Accessible DnD for Kanban + bookmark reordering |
-| Data Fetching | TanStack Query | Server-state caching, background refetching, optimistic updates |
-| Forms | TanStack Form | Type-safe forms with first-class Zod integration |
-| Keyboard Shortcuts | TanStack Hotkeys | Declarative hotkey bindings across the app |
-| State Management | Zustand | Lightweight reactive store; consistent with the TanStack ecosystem |
-| Validation | Zod | Shared schema validation between client and server |
-| Icons | tabler | Consistent icon set, tree-shakeable |
+- express  
+- Better Auth  
+- Prisma  
+- Nodemailer  
+- PostgreSQL  
+- Redis  
+- Supabase Realtime  
+- Supabase Storage  
 
----
+**Backend Security & Middleware**  
 
-## Backend
+- helmet  
+- express-rate-limit  
+- compression  
+- express-async-errors  
+- express-validator  
+- jsonwebtoken + bcryptjs  
 
-| Category | Technology | Rationale |
-|---|---|---|
-| Runtime | Bun | Faster than Node.js; built-in bundler, test runner, and package manager |
-| Server | Express | Minimal, battle-tested HTTP server; serves API + static client files |
-| Auth | Better Auth | Modern auth library with OAuth, Magic Link, and session management |
-| ORM | Prisma | Type-safe database client with migrations |
-| Email | Nodemailer | Handles magic link and transactional emails |
-| Validation | Zod | Shared schemas with frontend; runtime request validation |
-| validate env | t3-env | |
+**Observability & Logging**  
 
----
+- Sentry  
+- winston  
 
-## Database & Storage
+**API & Documentation**  
 
-| Category | Technology | Rationale |
-|---|---|---|
-| Primary DB | PostgreSQL | Relational data with JSONB support; managed via Prisma migrations |
-| Caching | Redis | Session caching, rate limiting, background job queues |
-| Realtime | Supabase Realtime | Live collaboration updates via WebSockets without custom infra |
-| File Storage | Supabase Storage | S3-compatible; cover images, thumbnails, user uploads |
+- open api  
 
----
+**Environment & Config**  
 
-## Infrastructure & Deployment
+- t3-env  
 
-| Category | Technology | Rationale |
-|---|---|---|
-| Containerization | Docker | Server + client shipped as a single image; consistent across envs |
-| Local Dev | Docker Compose | Spins up Express server, PostgreSQL, and Redis together locally |
-| CI/CD | GitHub Actions | Automated tests, linting, Docker image builds, and deployments |
-| Monitoring | Sentry | Error tracking and performance monitoring for both client and server |
-| Package Manager | Bun | Replaces npm/pnpm; significantly faster installs and script runs |
+**Code Quality & Tooling**  
 
----
+- biome  
 
-## Browser Extension
+**DevOps & Deployment**  
 
-| Category | Technology | Rationale |
-|---|---|---|
-| Framework | WXT (Web Extension Tools) | Build for Chrome, Firefox, and Safari from one codebase |
-| Language | TypeScript + React | Shared types and components with the main app |
-| Auth Sync | Cookie / Token passthrough | Reuses existing Better Auth session from the web app |
+- Docker / Docker Compose  
+- GitHub Actions  
 
----
+### Simple Roadmap / To-Do List – Suggested Order
 
-## Premium & Payments
+This is a pragmatic sequence for a **Vite + React frontend + Express + Prisma backend** app (monorepo or separate folders). Adjust slightly if using a monorepo structure.
 
-| Category | Technology | Rationale |
-|---|---|---|
-| Payments | Stripe | Subscription billing, customer portal, and webhooks |
-| Feature Gating | Middleware + DB flags | Server-side premium checks on Express routes via Prisma |
+1. Initialize project structure  
+   - Create folders (e.g. `/frontend`, `/backend` or monorepo root)  
+   - `npm create vite@latest` (frontend) → React + TS  
+   - `npm init -y` (backend) → add `"type": "module"` in package.json  
 
----
+2. Frontend basics  
+   - Install & configure **React + Vite** (already from create-vite)  
+   - Add **React Router v7** → set up basic routes/layout  
+   - Install **base ui** + **tabler** (UI/components)  
+   - Add **biome** (lint/format) → configure and run init  
 
-## Testing & Quality
+3. State & data frontend  
+   - Install **Zustand** → global/light state stores  
+   - Install **TanStack Query** → data fetching + cache  
+   - Install **TanStack Hotkeys** → keyboard shortcuts  
+   - Install **Zod** → schema/validation (forms, API responses)  
 
-| Category | Technology | Rationale |
-|---|---|---|
-| Unit / Integration | Vitest | Fast, Vite-native test runner; works seamlessly with Bun |
-| E2E | Playwright | Full browser testing for critical flows (auth, saving, sharing) |
-| Linting | ESLint + Prettier | Consistent code style; enforced via pre-commit hooks |
-| Schema Validation | Zod | Runtime safety at API boundaries; single source of truth |
+4. Backend basics  
+   - Install **express**  
+   - Add **helmet**, **compression**, **express-rate-limit** (early security/performance)  
+   - Add body parsers: `express.json()` + `express.urlencoded()`  
+   - Install **express-async-errors** → global async error support  
+
+5. Environment & config  
+   - Install **t3-env** → type-safe env variables (use in both FE/BE)  
+
+6. Database & ORM  
+   - Set up **PostgreSQL** (local or cloud)  
+   - Install **Prisma** → init, schema.prisma, generate client  
+   - (Optional early) **Redis** → install + basic client connection  
+
+7. Authentication  
+   - Install **Better Auth** → configure adapter (Prisma), providers  
+   - Install **jsonwebtoken + bcryptjs** (if you extend/customize auth)  
+   - Mount Better Auth handler (e.g. `/api/auth/*`)  
+
+8. Extra backend middleware & utils  
+   - Install **express-validator** → input validation  
+   - Install **Nodemailer** → email sending (verification, etc.)  
+   - Install **winston** → structured logging  
+
+9. Supabase extras (if using)  
+   - Configure **Supabase Realtime** (client-side subscriptions)  
+   - Configure **Supabase Storage** (file uploads)  
+
+10. API Documentation  
+    - Add **open api** (e.g. swagger-jsdoc + swagger-ui-express or tsoa)  
+
+11. Error handling & observability  
+    - Add global error middleware (after routes)  
+    - Install & configure **Sentry** (both frontend + backend)  
+
+12. Advanced frontend features  
+    - Add **dnd-kit** → drag & drop  
+    - (If building extension) Add **WXT** setup  
+
+13. DevOps & production  
+    - Dockerize (backend + optionally frontend) → write **Dockerfile** + **docker-compose.yml** (PostgreSQL, Redis, app)  
+    - Set up **GitHub Actions** (CI: lint, build, test; CD: deploy)  
+
+→ get something rendering in browser.  
+→ get a working backend + auth + DB.  
+→ polish backend.  
+→ advanced + deploy.
