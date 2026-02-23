@@ -1,5 +1,6 @@
 import "./globals.css";
 
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import { ReactNode } from "react";
@@ -30,6 +31,7 @@ export default function RootLayout({
 					position="top-center"
 					theme="dark"
 				/>
+				<Analytics />
 			</body>
 		</html>
 	);

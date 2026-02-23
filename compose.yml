@@ -7,7 +7,7 @@ services:
   #     context: .
   #     dockerfile: www/Dockerfile
   #   image: www-image
-  #   container_name: www-container
+  #   container_name: www
   #   environment:
   #     NODE_ENV: production
   #     PORT: "3000"
@@ -27,7 +27,7 @@ services:
       #   NEXT_PUBLIC_API_URL: http://api:4000  # example: bake env into bundle
 
     image: www-image
-    container_name: www-container
+    container_name: www
 
     environment:
       NODE_ENV: production
