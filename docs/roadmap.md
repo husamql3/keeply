@@ -6,12 +6,12 @@
 
 ## Overview
 
-| Phase | Focus | Period | Goal |
-|---|---|---|---|
-| Phase 1 | Foundation | Q1 2026 (Months 1–2) | Ship a working MVP |
+| Phase   | Focus                    | Period               | Goal                           |
+| ------- | ------------------------ | -------------------- | ------------------------------ |
+| Phase 1 | Foundation               | Q1 2026 (Months 1–2) | Ship a working MVP             |
 | Phase 2 | Organization & Discovery | Q2 2026 (Months 3–4) | Advanced org tools and filters |
-| Phase 3 | Premium & Sharing | Q3 2026 (Months 5–6) | Launch paid subscription |
-| Phase 4 | Polish & Scale | Q4 2026 (Month 7+) | Stability and community growth |
+| Phase 3 | Premium & Sharing        | Q3 2026 (Months 5–6) | Launch paid subscription       |
+| Phase 4 | Polish & Scale           | Q4 2026 (Month 7+)   | Stability and community growth |
 
 ---
 
@@ -84,4 +84,4 @@
 
 ---
 
-*★ = Premium feature · Phases and timelines subject to change based on user feedback.*
+_★ = Premium feature · Phases and timelines subject to change based on user feedback._

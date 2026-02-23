@@ -1,0 +1,177 @@
+services:
+  # ============================================================
+  # www — Next.js served via Bun
+  # ============================================================
+  www:
+    build:
+      target: dev
+      context: .
+      dockerfile: www/Dockerfile.bun
+      # ── Build-time variables (available only during `docker build`) ──────
+      # args:
+      #   NEXT_PUBLIC_API_URL: http://api:4000  # example: bake env into bundle
+
+    image: www-image
+    container_name: www-container
+
+    environment:
+      NODE_ENV: development
+      PORT: "3000"
+      # ── Runtime env vars ────────────────────────────────────────────────
+      # NEXT_PUBLIC_API_URL: http://api:4000   # server-side only; client-side needs rebuild
+      # HOSTNAME: "0.0.0.0"                    # already set in Dockerfile
+
+    # ── Load secrets / per-developer overrides from a file ────────────────
+    # env_file:
+    #   - .env.local          # gitignored local overrides
+    #   - .env.production     # shared production defaults
+
+    ports:
+      - "3000:3000" # host:container — change left side to avoid conflicts
+      # - "127.0.0.1:3000:3000"  # bind to localhost only (more secure in prod)
+
+    # ── Named volumes (data persists across container restarts) ───────────
+    volumes:
+      - ./www:/app/www:delegated # mount source code for live reload
+      - www_cache:/app/.next/cache # preserve Next.js build cache between runs
+
+    # ── Networking ────────────────────────────────────────────────────────
+    networks:
+      - app-network
+    # ── Health check — Docker will mark container unhealthy if this fails ─
+    # healthcheck:
+    #   test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+    #   interval: 30s    # how often to run
+    #   timeout: 10s     # how long to wait for a response
+    #   retries: 3       # failures before marking unhealthy
+    #   start_period: 20s # grace period on first start
+
+    # ── Resource limits (prevent one container starving the host) ─────────
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "1.0"
+    #       memory: 512M
+    #     reservations:
+    #       memory: 256M
+
+    # ── Dependency ordering ───────────────────────────────────────────────
+    # depends_on:
+    #   api:
+    #     condition: service_healthy   # waits for api's healthcheck to pass
+
+    restart: unless-stopped
+    # Other restart options:
+    # no             — never restart (useful for one-shot jobs)
+    # always         — restart even after `docker stop` (use with care)
+    # on-failure     — only on non-zero exit code
+    # unless-stopped — restart unless you manually stopped it (recommended)
+
+  # ============================================================
+  # web — e.g. a separate marketing / landing site
+  # ============================================================
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: web/Dockerfile
+  #   image: web-image
+  #   container_name: web-container
+  #   environment:
+  #     NODE_ENV: production
+  #     PORT: "3001"
+  #   ports:
+  #     - "3001:3001"
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
+
+  # ============================================================
+  # api — backend service
+  # ============================================================
+  # api:
+  #   build:
+  #     context: .
+  #     dockerfile: api/Dockerfile
+  #   image: api-image
+  #   container_name: api-container
+  #   environment:
+  #     NODE_ENV: production
+  #     PORT: "4000"
+  #     # DATABASE_URL: postgres://user:pass@db:5432/mydb
+  #   ports:
+  #     - "4000:4000"
+  #   networks:
+  #     - app-network
+  #   # depends_on:
+  #   #   db:
+  #   #     condition: service_healthy
+  #   # healthcheck:
+  #   #   test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
+  #   #   interval: 30s
+  #   #   timeout: 10s
+  #   #   retries: 3
+  #   restart: unless-stopped
+
+  # ============================================================
+  # shared — build-only image that others copy artifacts from
+  # (useful for a shared TypeScript package / design system)
+  # ============================================================
+  # shared:
+  #   build:
+  #     context: .
+  #     dockerfile: shared/Dockerfile
+  #   image: shared-image
+  #   # No ports needed if this is just a build-time dependency
+
+  # ============================================================
+  # Optional: PostgreSQL database
+  # ============================================================
+  # db:
+  #   image: postgres:16-alpine
+  #   container_name: db-container
+  #   environment:
+  #     POSTGRES_USER: user
+  #     POSTGRES_PASSWORD: pass
+  #     POSTGRES_DB: mydb
+  #   volumes:
+  #     - pg_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - app-network
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U user -d mydb"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   restart: unless-stopped
+
+  # ============================================================
+  # Optional: Redis cache
+  # ============================================================
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: redis-container
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - app-network
+  #   restart: unless-stopped
+
+# ==============================================================================
+# Networks
+# ==============================================================================
+networks:
+  app-network:
+    driver: bridge
+    # ── Use an existing external network (e.g. shared across projects) ────
+    # external: true
+# ==============================================================================
+# Volumes
+# ==============================================================================
+volumes:
+  #   pg_data:       # persists Postgres data across container restarts
+  #   redis_data:    # persists Redis data
+  www_cache: # persists Next.js cache
