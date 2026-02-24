@@ -62,7 +62,7 @@ export default function Home() {
 	};
 
 	return (
-		<div className="flex min-h-screen items-center justify-center relative px-4 sm:px-6 py-8">
+		<div className="flex h-dvh items-center justify-center relative px-4 sm:px-6 py-8">
 			<div className="w-full h-full absolute bottom-0 left-0 pointer-events-none select-none touch-none opacity-20">
 				<Grainient
 					color1="#4a94a2"

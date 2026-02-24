@@ -87,12 +87,13 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={cn(dmSans.variable, "bg-zinc-950", "antialiased", "dark")}>
+			<body className={cn(dmSans.variable, "bg-zinc-950 antialiased dark")}>
 				{children}
-				<Toaster
-					position="top-center"
-					theme="dark"
-				/>
+			<Toaster
+				position="top-center"
+				theme="dark"
+			/>
+			<div className="hidden lg:block">
 				<SmoothCursor
 					springConfig={{
 						damping: 45,
@@ -101,7 +102,8 @@ export default function RootLayout({
 						restDelta: 0.001,
 					}}
 				/>
-				<Analytics />
+			</div>
+			<Analytics />
 			</body>
 		</html>
 	);

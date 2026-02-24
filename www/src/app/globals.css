@@ -125,12 +125,14 @@
   }
 }
 
-* {
-  cursor: none !important;
-}
+@media (min-width: 1024px) {
+  * {
+    cursor: none !important;
+  }
 
-input,
-textarea,
-select {
-  cursor: text !important;
+  input,
+  textarea,
+  select {
+    cursor: text !important;
+  }
 }
