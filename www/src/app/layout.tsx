@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 		template: "%s | Keeply",
 	},
 	description:
-		"Keeply is a bookmark manager that helps you save, organize, and find anything from the web. Collections, tags, full-text search, and more — beautifully organized.",
+		"Keeply is a bookmark manager that helps you save, organize, and find anything from the web. Collections, tags, full-text search, and more - beautifully organized.",
 	keywords: [
 		"bookmark manager",
 		"save links",
@@ -41,24 +41,24 @@ export const metadata: Metadata = {
 		locale: "en_US",
 		url: "https://keeply.cc",
 		siteName: "Keeply",
-		title: "Keeply — Your Personal Internet Archive",
+		title: "Keeply - Your Personal Internet Archive",
 		description:
-			"Save everything. Find anything. Keeply helps you organize the internet your way — with collections, tags, and powerful search.",
+			"Save everything. Find anything. Keeply helps you organize the internet your way - with collections, tags, and powerful search.",
 		// images: [
 		// 	{
 		// 		url: "/og-image.png", // create a 1200x630 image
 		// 		width: 1200,
 		// 		height: 630,
-		// 		alt: "Keeply — Your Personal Internet Archive",
+		// 		alt: "Keeply - Your Personal Internet Archive",
 		// 	},
 		// ],
 	},
 	twitter: {
 		card: "summary_large_image",
-		title: "Keeply — Your Personal Internet Archive",
+		title: "Keeply - Your Personal Internet Archive",
 		description: "Save everything. Find anything. Keeply helps you organize the internet your way.",
 		// images: ["/og-image.png"],
-		creator: "@keeplycc",
+		creator: "@keep1y",
 	},
 	robots: {
 		index: true,
