@@ -1,6 +1,6 @@
 "use client";
 
-import { MailIcon } from "lucide-react";
+import { AtSignIcon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { sileo } from "sileo";
@@ -62,19 +62,7 @@ export default function Home() {
 	};
 
 	return (
-		<div className="flex min-h-screen items-center justify-center relative">
-			{/* <div className="rotate-180 w-full h-full absolute bottom-0 left-0 pointer-events-none select-none touch-none opacity-30">
-				<DarkVeil
-					speed={1}
-					hueShift={66}
-					noiseIntensity={0.2}
-					scanlineIntensity={0}
-					scanlineFrequency={0.5}
-					warpAmount={0}
-					resolutionScale={1}
-				/>
-			</div> */}
-
+		<div className="flex min-h-screen items-center justify-center relative px-4 sm:px-6 py-8">
 			<div className="w-full h-full absolute bottom-0 left-0 pointer-events-none select-none touch-none opacity-20">
 				<Grainient
 					color1="#4a94a2"
@@ -102,29 +90,33 @@ export default function Home() {
 				/>
 			</div>
 
-			<div className="relative z-10 flex flex-col items-center justify-center">
+			<div className="relative z-10 flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
 				<Image
 					src="/icon.png"
 					alt="Keeply"
 					width={60}
 					height={60}
-					className="mb-4"
+					className="mb-4 sm:mb-6 w-12 h-12 sm:w-[60px] sm:h-[60px]"
 					priority
 					loading="eager"
 				/>
 
-				<div className="space-y-1 mb-2">
-					<h2 className="text-center font-semibold text-2xl tracking-tight md:text-4xl">Get In Before It’s Crowded</h2>
-					<p className="text-balance text-center text-muted-foreground text-sm md:text-base">
-						Join the waitlist and be among the first to organize the internet your way.
+				<div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 px-2">
+					<h2 className="text-center font-semibold text-2xl tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
+						Save Everything. Find Anything.
+					</h2>
+					<p className="text-balance text-center text-muted-foreground text-sm sm:text-base md:text-lg max-w-xl mx-auto">
+						We're Building Something You'll Love.
+						<br />
+						Sign up and we'll let you know the moment it's ready.
 					</p>
 				</div>
 
 				<form
 					onSubmit={handleJoinWaitlist}
-					className="max-w-md w-full mt-6 mb-2"
+					className="w-full max-w-md px-2"
 				>
-					<Field className="flex flex-row items-center relative">
+					<Field className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-2 relative">
 						<FieldLabel
 							htmlFor="email-input"
 							className="sr-only"
@@ -134,7 +126,7 @@ export default function Home() {
 
 						<InputGroup className="w-full flex-1">
 							<InputGroupAddon>
-								<MailIcon className="text-muted-foreground" />
+								<AtSignIcon className="text-muted-foreground size-4" />
 							</InputGroupAddon>
 							<InputGroupInput
 								id="email-input"
@@ -145,15 +137,16 @@ export default function Home() {
 								onChange={(e) => setEmail(e.target.value)}
 								disabled={isSubmitting}
 								required
-								className="bg-zinc-900 w-full flex-1"
+								className="bg-zinc-900 w-full flex-1 text-sm sm:text-base"
 							/>
 						</InputGroup>
 
-						<div className="w-fit! relative">
+						<div className="w-full! sm:w-fit! relative">
 							<Button
 								type="submit"
 								variant="default"
 								disabled={isSubmitting}
+								className="w-full sm:w-auto text-sm sm:text-base"
 							>
 								{isSubmitting ? "Joining..." : "Join Waitlist"}
 							</Button>
@@ -163,7 +156,7 @@ export default function Home() {
 								loading="eager"
 								width={50}
 								height={50}
-								className="absolute -top-5 -right-7 size-7 pointer-events-none select-none touch-none"
+								className="absolute -top-5 -right-3 sm:-top-5 sm:-right-7 size-6 sm:size-7 pointer-events-none select-none touch-none hidden sm:block"
 								priority
 							/>
 						</div>

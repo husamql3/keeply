@@ -1,0 +1,59 @@
+# Keeply
+
+> Your personal internet archive, beautifully organized.
+
+Keeply is a bookmark manager that helps you save, organize, and rediscover anything from the web. It is designed for people who save a lot of links and want a clean, powerful way to manage them — with collections, tags, full-text search, and sharing.
+
+## What Keeply Does
+
+- Save bookmarks from any webpage via a browser extension or manual entry
+- Organize bookmarks into collections with up to 3 levels of nesting
+- Tag bookmarks with multiple tags and filter by them using AND/OR logic
+- Search across titles, descriptions, URLs, and tags
+- Pin bookmarks and collections for quick access
+- Share collections publicly, via link, or keep them private
+- Collaborate with others on shared collections (premium)
+- Embed public collections on external websites (premium)
+
+## Target Users
+
+People who regularly save links from the web and want more than what browser bookmarks offer — developers, researchers, writers, designers, and curious people who collect information.
+
+## Key Features
+
+- Authentication: Google OAuth, GitHub OAuth, Magic Link (passwordless)
+- Bookmark properties: title, URL, description, tags, date added, source platform, pin
+- Collections: create, nest, add cover images, view stats
+- Views: grid, list, kanban
+- Organization: drag-and-drop, move between collections, favorites/starred
+- Search: full-text search across all bookmark fields
+- Filters: by tag, platform, date range, with sort options
+- Privacy: private, unlisted, or public collections
+- Sharing: shareable links, view-only mode, social sharing (X, Facebook, LinkedIn)
+- Premium: color-coded tags, collaboration, embed code
+
+## Tech Stack
+
+- Frontend: React, Vite, React Router v7, Zustand, TanStack Query
+- Backend: Node.js, Express, Prisma, PostgreSQL, Redis
+- Auth: Better Auth
+- Realtime & Storage: Supabase
+- Deployment: Docker, GitHub Actions
+
+## Roadmap (2026)
+
+- Q1: MVP — auth, bookmarking, collections, search, sharing
+- Q2: Advanced organization — nested collections, kanban, pinning, filters
+- Q3: Premium launch — collaboration, color tags, embed, social sharing
+- Q4: AI suggestions, auto-tagging, mobile apps, public API, team workspaces
+
+## Policies
+
+- Free tier available with core features
+- Premium subscription required for collaboration, color-coded tags, and embed code
+- No ads in any Keeply product
+
+## Contact & Links
+
+- Website: https://keeply.cc
+- Support: @

@@ -3,11 +3,9 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "next dev",
+		"dev": "next dev --hostname 0.0.0.0",
 		"build": "next build",
-		"start": "next start",
-		"lint": "biome check",
-		"format": "biome format --write"
+		"start": "next start"
 	},
 	"dependencies": {
 		"@supabase/supabase-js": "^2.97.0",
@@ -15,7 +13,9 @@
 		"@vercel/analytics": "^1.6.1",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
+		"framer-motion": "^12.34.3",
 		"lucide-react": "^0.575.0",
+		"motion": "^12.34.3",
 		"next": "16.1.6",
 		"nodemailer": "^6.9.17",
 		"ogl": "^1.0.11",
@@ -26,7 +26,6 @@
 		"tailwind-merge": "^3.5.0"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.0",
 		"@tailwindcss/postcss": "^4",
 		"@types/node": "^20",
 		"@types/react": "^19",
