@@ -88,22 +88,55 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={cn(dmSans.variable, "bg-zinc-950 antialiased dark")}>
-				{children}
-			<Toaster
-				position="top-center"
-				theme="dark"
-			/>
-			<div className="hidden lg:block">
-				<SmoothCursor
-					springConfig={{
-						damping: 45,
-						stiffness: 600,
-						mass: 1,
-						restDelta: 0.001,
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{
+						__html: JSON.stringify({
+							"@context": "https://schema.org",
+							"@type": "SoftwareApplication",
+							name: "Keeply",
+							applicationCategory: "ProductivityApplication",
+							operatingSystem: "Web",
+							description:
+								"Keeply is a bookmark manager that helps you save, organize, and find anything from the web with collections, tags, and full-text search.",
+							offers: {
+								"@type": "Offer",
+								price: "0",
+								priceCurrency: "USD",
+							},
+							url: "https://keeply.cc",
+						}),
 					}}
 				/>
-			</div>
-			<Analytics />
+				<script
+					type="application/ld+json"
+					dangerouslySetInnerHTML={{
+						__html: JSON.stringify({
+							"@context": "https://schema.org",
+							"@type": "Organization",
+							name: "Keeply",
+							url: "https://keeply.cc",
+							logo: "https://keeply.cc/icon.png",
+							sameAs: [],
+						}),
+					}}
+				/>
+				{children}
+				<Toaster
+					position="top-center"
+					theme="dark"
+				/>
+				<div className="hidden lg:block">
+					<SmoothCursor
+						springConfig={{
+							damping: 45,
+							stiffness: 600,
+							mass: 1,
+							restDelta: 0.001,
+						}}
+					/>
+				</div>
+				<Analytics />
 			</body>
 		</html>
 	);
