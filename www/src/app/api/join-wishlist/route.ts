@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
 
 		const { error } = await supabase.from("keeply_wishlist").insert({ email });
 		if (error) {
-			if (error.code === "23505" || error.message.includes("duplicate key")) {
+			if (error.code === "23505") {
 				return NextResponse.json({ error: "This email is already on the waitlist!" }, { status: 409 });
 			}
 			return NextResponse.json({ error: error.message }, { status: 500 });
