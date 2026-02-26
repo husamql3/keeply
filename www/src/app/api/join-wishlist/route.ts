@@ -1,3 +1,6 @@
+import path from "path";
+
+import fs from "fs/promises";
 import { NextRequest, NextResponse } from "next/server";
 
 import { transporter } from "@/lib/email";
@@ -25,11 +28,15 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
 
+		const templatePath = path.join(process.cwd(), "public", "waitlist-joined-template.html");
+		const emailTemplate = await fs.readFile(templatePath, "utf-8");
+
 		await transporter.sendMail({
-			from: `"Keeply" <${process.env.EMAIL_USER}>`,
+			from: `"Keeply" <no-reply@keeply.cc>`,
 			to: email,
-			subject: "Welcome to the waitlist!",
-			html: `<p>Welcome to the waitlist!</p>`,
+			subject: "Welcome to Keeply! 🎉",
+			html: emailTemplate,
+			replyTo: undefined,
 		});
 
 		return NextResponse.json(

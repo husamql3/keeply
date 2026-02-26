@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+if (!process.env.EMAIL_PASSWORD) {
 	throw new Error("Missing email environment variables");
 }
 
@@ -10,7 +10,7 @@ export const transporter = nodemailer.createTransport({
 	port: 587,
 	secure: false,
 	auth: {
-		user: process.env.EMAIL_USER,
+		user: "team@keeply.cc",
 		pass: process.env.EMAIL_PASSWORD,
 	},
 	pool: true,

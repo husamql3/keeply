@@ -2,7 +2,7 @@
 
 import { AtSignIcon } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { sileo } from "sileo";
 
 import { Grainient } from "@/components/grainient";
@@ -14,7 +14,7 @@ export default function Home() {
 	const [email, setEmail] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const handleJoinWaitlist = async (e: React.FormEvent) => {
+	const handleJoinWaitlist = async (e: FormEvent) => {
 		e.preventDefault();
 
 		if (!email || !email.includes("@")) {
@@ -92,7 +92,7 @@ export default function Home() {
 
 			<div className="relative z-10 flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
 				<Image
-					src="/icon.png"
+					src="/icon-light.png"
 					alt="Keeply"
 					width={60}
 					height={60}
@@ -148,7 +148,7 @@ export default function Home() {
 								disabled={isSubmitting}
 								className="w-full sm:w-auto text-sm sm:text-base"
 							>
-								{isSubmitting ? "Joining..." : "Join Waitlist"}
+								Get early access
 							</Button>
 							<Image
 								src="/dashs.svg"
