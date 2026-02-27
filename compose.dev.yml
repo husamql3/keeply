@@ -1,89 +1,55 @@
 services:
-  # ============================================================
-  # www — Next.js served via Bun
-  # ============================================================
   www:
     build:
       target: dev
       context: .
       dockerfile: www/Dockerfile.bun
-      # ── Build-time variables (available only during `docker build`) ──────
-      # args:
-      #   NEXT_PUBLIC_API_URL: http://api:4000  # example: bake env into bundle
 
     image: www-image
-    container_name: www
+    container_name: www-container
 
     environment:
       NODE_ENV: development
-      PORT: "3000"
-      # ── Runtime env vars ────────────────────────────────────────────────
-      # NEXT_PUBLIC_API_URL: http://api:4000   # server-side only; client-side needs rebuild
-      # HOSTNAME: "0.0.0.0"                    # already set in Dockerfile
-
-    # ── Load secrets / per-developer overrides from a file ────────────────
-    # env_file:
-    #   - .env.local          # gitignored local overrides
-    #   - .env.production     # shared production defaults
+      PORT: "3002"
+    env_file:
+      - .env
 
     ports:
-      - "3000:3000" # host:container — change left side to avoid conflicts
-      # - "127.0.0.1:3000:3000"  # bind to localhost only (more secure in prod)
+      - "3002:3002"
 
-    # ── Named volumes (data persists across container restarts) ───────────
     volumes:
-      - ./www:/app/www:delegated # mount source code for live reload
-      - www_cache:/app/.next/cache # preserve Next.js build cache between runs
+      - ./www:/app/www:delegated
+      - www_cache:/app/.next/cache
 
-    # ── Networking ────────────────────────────────────────────────────────
     networks:
       - app-network
-    # ── Health check — Docker will mark container unhealthy if this fails ─
-    # healthcheck:
-    #   test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
-    #   interval: 30s    # how often to run
-    #   timeout: 10s     # how long to wait for a response
-    #   retries: 3       # failures before marking unhealthy
-    #   start_period: 20s # grace period on first start
-
-    # ── Resource limits (prevent one container starving the host) ─────────
-    # deploy:
-    #   resources:
-    #     limits:
-    #       cpus: "1.0"
-    #       memory: 512M
-    #     reservations:
-    #       memory: 256M
-
-    # ── Dependency ordering ───────────────────────────────────────────────
-    # depends_on:
-    #   api:
-    #     condition: service_healthy   # waits for api's healthcheck to pass
-
     restart: unless-stopped
-    # Other restart options:
-    # no             — never restart (useful for one-shot jobs)
-    # always         — restart even after `docker stop` (use with care)
-    # on-failure     — only on non-zero exit code
-    # unless-stopped — restart unless you manually stopped it (recommended)
 
-  # ============================================================
-  # web — e.g. a separate marketing / landing site
-  # ============================================================
-  # web:
-  #   build:
-  #     context: .
-  #     dockerfile: web/Dockerfile
-  #   image: web-image
-  #   container_name: web-container
-  #   environment:
-  #     NODE_ENV: production
-  #     PORT: "3001"
-  #   ports:
-  #     - "3001:3001"
-  #   networks:
-  #     - app-network
-  #   restart: unless-stopped
+  web:
+    build:
+      target: dev
+      context: .
+      dockerfile: web/Dockerfile.bun
+
+    image: web-image
+    container_name: web-container
+
+    environment:
+      NODE_ENV: development
+      PORT: "3001"
+    env_file:
+      - .env
+
+    ports:
+      - "3001:3001"
+
+    volumes:
+      - ./web:/app/web:delegated
+      - web_cache:/app/.next/cache
+
+    networks:
+      - app-network
+    restart: unless-stopped
 
   # ============================================================
   # api — backend service
@@ -174,4 +140,5 @@ networks:
 volumes:
   #   pg_data:       # persists Postgres data across container restarts
   #   redis_data:    # persists Redis data
-  www_cache: # persists Next.js cache
+  www_cache: # persists Next.js cache for www
+  web_cache: # persists Next.js cache for web

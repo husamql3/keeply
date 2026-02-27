@@ -2,7 +2,7 @@
 
 import { AtSignIcon } from "lucide-react";
 import Image from "next/image";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { sileo } from "sileo";
 
 import { Grainient } from "@/components/grainient";
@@ -10,9 +10,41 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 
+const MILESTONES = [500, 250, 100, 50, 25, 10, 5, 1] as const;
+
+function formatWaitlistCount(count: number): string | null {
+	if (count <= 0) return null;
+	for (const milestone of MILESTONES) {
+		if (count >= milestone) {
+			return `+${milestone}`;
+		}
+	}
+	return null;
+}
+
 export default function Home() {
 	const [email, setEmail] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+	const [isLoadingCount, setIsLoadingCount] = useState(true);
+
+	useEffect(() => {
+		const fetchWaitlistCount = async () => {
+			try {
+				const response = await fetch("/api/wishlist");
+				if (response.ok) {
+					const data = await response.json();
+					setWaitlistCount(data.count);
+				}
+			} catch (error) {
+				console.error("Failed to fetch waitlist count:", error);
+			} finally {
+				setIsLoadingCount(false);
+			}
+		};
+
+		fetchWaitlistCount();
+	}, []);
 
 	const handleJoinWaitlist = async (e: FormEvent) => {
 		e.preventDefault();
@@ -42,6 +74,9 @@ export default function Home() {
 				}
 
 				setEmail("");
+				if (waitlistCount !== null) {
+					setWaitlistCount(waitlistCount + 1);
+				}
 				return data;
 			})
 			.finally(() => {
@@ -163,11 +198,23 @@ export default function Home() {
 					</Field>
 				</form>
 
-				{/* <div className="flex items-center gap-2 p-2! bg-transparent! border-none!">
-					<p className="text-muted-foreground me-1.5 text-xs">
-						Joined by <span className="text-foreground font-semibold">500+</span> developers.
-					</p>
-				</div> */}
+				<div className="flex items-center gap-2 p-2! bg-transparent! border-none!">
+					{isLoadingCount ? (
+						<div className="text-muted-foreground me-1.5 text-xs flex items-center gap-1.5">
+							<span>Joined by</span>
+							<span className="inline-block bg-muted animate-pulse rounded h-4 w-6" />
+							<span>developers.</span>
+						</div>
+					) : waitlistCount !== null && waitlistCount > 0 ? (
+						<p className="text-muted-foreground me-1.5 text-xs">
+							Joined by{" "}
+							<span className="text-foreground font-semibold">
+								{formatWaitlistCount(waitlistCount) || waitlistCount}
+							</span>{" "}
+							developers.
+						</p>
+					) : null}
+				</div>
 			</div>
 		</div>
 	);

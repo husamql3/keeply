@@ -13,7 +13,7 @@ RUN --mount=type=cache,target=/root/.bun/install/cache \
   bun install --frozen-lockfile
 
 # Source is mounted via volume at runtime — not copied here
-CMD ["bun", "run", "--filter", "www", "dev"]
+CMD ["bun", "run", "--filter", "web", "dev"]
 
 # ============================================
 # Stage 1: Dependencies Installation Stage
@@ -61,7 +61,7 @@ ENV NODE_ENV=production
 # ENV NEXT_TELEMETRY_DISABLED=1
 
 # Build Next.js application
-RUN bun run --filter www build
+RUN bun run --filter web build
 
 # ============================================
 # Stage 3: Run Next.js application
@@ -74,7 +74,7 @@ WORKDIR /app
 
 # Set production environment variables
 ENV NODE_ENV=production
-ENV PORT=3002
+ENV PORT=3001
 ENV HOSTNAME="0.0.0.0"
 
 # Next.js collects completely anonymous telemetry data about general usage.
@@ -83,15 +83,15 @@ ENV HOSTNAME="0.0.0.0"
 # ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy production assets
-COPY --from=builder --chown=bun:bun /app/www/public ./www/public
-COPY --from=builder --chown=bun:bun /app/www/.next/standalone ./
-COPY --from=builder --chown=bun:bun /app/www/.next/static ./www/.next/static
+COPY --from=builder --chown=bun:bun /app/web/public ./web/public
+COPY --from=builder --chown=bun:bun /app/web/.next/standalone ./
+COPY --from=builder --chown=bun:bun /app/web/.next/static ./web/.next/static
 
 # Switch to non-root user for security best practices
 USER bun
 
-# Expose port 3002 to allow HTTP traffic
-EXPOSE 3002
+# Expose port 3001 to allow HTTP traffic
+EXPOSE 3001
 
 # Start Next.js standalone server with Bun
-CMD ["bun", "www/server.js"]
+CMD ["bun", "web/server.js"]
