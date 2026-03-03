@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 
-const MILESTONES = [500, 250, 100, 50, 25, 10, 5, 1] as const;
+const MILESTONES = [500, 250, 100, 50, 30, 10, 5, 1] as const;
 
 function formatWaitlistCount(count: number): string | null {
 	if (count <= 0) return null;

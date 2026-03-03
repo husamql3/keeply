@@ -1,6 +1,7 @@
 import path from "path";
 
 import fs from "fs/promises";
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 import { transporter } from "@/lib/email";
@@ -38,6 +39,8 @@ export async function POST(request: NextRequest) {
 			html: emailTemplate,
 			replyTo: undefined,
 		});
+
+		revalidatePath("/api/wishlist");
 
 		return NextResponse.json(
 			{
