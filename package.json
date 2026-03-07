@@ -2,11 +2,12 @@
 	"name": "keeply",
 	"workspaces": [
 		"www",
-		"web"
+		"web",
+		"api"
 	],
 	"scripts": {
 		"build": "bun run build:all",
-		"build:all": "bun run --filter '{www,web}' build",
+		"build:all": "bun run --filter '{www,web,api}' build",
 		"format": "oxlint && oxfmt --write"
 	},
 	"dependencies": {},
