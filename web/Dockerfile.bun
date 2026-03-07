@@ -8,6 +8,7 @@ WORKDIR /app
 COPY package.json bun.lock* ./
 COPY www/package.json ./www/
 COPY web/package.json ./web/
+COPY api/package.json ./api/
 
 RUN --mount=type=cache,target=/root/.bun/install/cache \
   bun install --frozen-lockfile
@@ -33,6 +34,7 @@ COPY package.json bun.lock* ./
 # Copy each workspace member's package.json so Bun can resolve the workspace
 COPY www/package.json ./www/
 COPY web/package.json ./web/
+COPY api/package.json ./api/
 
 # Install project dependencies with frozen lockfile for reproducible builds
 RUN --mount=type=cache,target=/root/.bun/install/cache \

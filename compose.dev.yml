@@ -52,31 +52,42 @@ services:
     restart: unless-stopped
 
   # ============================================================
-  # api — backend service
+  # api — backend service (NestJS with Bun)
   # ============================================================
-  # api:
-  #   build:
-  #     context: .
-  #     dockerfile: api/Dockerfile
-  #   image: api-image
-  #   container_name: api-container
-  #   environment:
-  #     NODE_ENV: production
-  #     PORT: "4000"
-  #     # DATABASE_URL: postgres://user:pass@db:5432/mydb
-  #   ports:
-  #     - "4000:4000"
-  #   networks:
-  #     - app-network
-  #   # depends_on:
-  #   #   db:
-  #   #     condition: service_healthy
-  #   # healthcheck:
-  #   #   test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
-  #   #   interval: 30s
-  #   #   timeout: 10s
-  #   #   retries: 3
-  #   restart: unless-stopped
+  api:
+    build:
+      target: dev
+      context: .
+      dockerfile: api/Dockerfile.bun
+
+    image: api-image
+    container_name: api-container
+
+    environment:
+      NODE_ENV: development
+      PORT: "4000"
+      # DATABASE_URL: postgres://user:pass@db:5432/mydb
+    env_file:
+      - .env
+
+    ports:
+      - "4000:4000"
+
+    volumes:
+      - ./api:/app/api:delegated
+      - /app/api/node_modules
+
+    networks:
+      - app-network
+    # depends_on:
+    #   db:
+    #     condition: service_healthy
+    # healthcheck:
+    #   test: ["CMD", "wget", "-qO-", "http://localhost:4000/api/health"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    restart: unless-stopped
 
   # ============================================================
   # shared — build-only image that others copy artifacts from

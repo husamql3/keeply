@@ -6,15 +6,15 @@ FROM oven/bun:1 AS dev
 WORKDIR /app
 
 COPY package.json bun.lock* ./
+COPY api/package.json ./api/
 COPY www/package.json ./www/
 COPY web/package.json ./web/
-COPY api/package.json ./api/
 
 RUN --mount=type=cache,target=/root/.bun/install/cache \
   bun install --frozen-lockfile
 
 # Source is mounted via volume at runtime — not copied here
-CMD ["bun", "run", "--filter", "www", "dev"]
+CMD ["bun", "run", "--filter", "api", "start:dev"]
 
 # ============================================
 # Stage 1: Dependencies Installation Stage
@@ -32,16 +32,16 @@ WORKDIR /app
 COPY package.json bun.lock* ./
 
 # Copy each workspace member's package.json so Bun can resolve the workspace
+COPY api/package.json ./api/
 COPY www/package.json ./www/
 COPY web/package.json ./web/
-COPY api/package.json ./api/
 
 # Install project dependencies with frozen lockfile for reproducible builds
 RUN --mount=type=cache,target=/root/.bun/install/cache \
   bun install --no-save --frozen-lockfile
 
 # ============================================
-# Stage 2: Build Next.js application in standalone mode
+# Stage 2: Build NestJS application
 # ============================================
 
 FROM oven/bun:1 AS builder
@@ -57,16 +57,11 @@ COPY . .
 
 ENV NODE_ENV=production
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the build.
-# ENV NEXT_TELEMETRY_DISABLED=1
-
-# Build Next.js application
-RUN bun run --filter www build
+# Build NestJS application
+RUN bun run --filter api build
 
 # ============================================
-# Stage 3: Run Next.js application
+# Stage 3: Run NestJS application
 # ============================================
 
 FROM oven/bun:1 AS runner
@@ -76,24 +71,19 @@ WORKDIR /app
 
 # Set production environment variables
 ENV NODE_ENV=production
-ENV PORT=3002
+ENV PORT=4000
 ENV HOSTNAME="0.0.0.0"
 
-# Next.js collects completely anonymous telemetry data about general usage.
-# Learn more here: https://nextjs.org/telemetry
-# Uncomment the following line in case you want to disable telemetry during the run time.
-# ENV NEXT_TELEMETRY_DISABLED=1
-
 # Copy production assets
-COPY --from=builder --chown=bun:bun /app/www/public ./www/public
-COPY --from=builder --chown=bun:bun /app/www/.next/standalone ./
-COPY --from=builder --chown=bun:bun /app/www/.next/static ./www/.next/static
+COPY --from=builder --chown=bun:bun /app/api/dist ./api/dist
+COPY --from=builder --chown=bun:bun /app/api/package.json ./api/
+COPY --from=builder --chown=bun:bun /app/node_modules ./node_modules
 
 # Switch to non-root user for security best practices
 USER bun
 
-# Expose port 3002 to allow HTTP traffic
-EXPOSE 3002
+# Expose port 4000 to allow HTTP traffic
+EXPOSE 4000
 
-# Start Next.js standalone server with Bun
-CMD ["bun", "www/server.js"]
+# Start NestJS server with Bun
+CMD ["bun", "run", "--filter", "api", "start:prod"]

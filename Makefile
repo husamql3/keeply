@@ -1,11 +1,13 @@
 # ==============================================================================
-# Makefile — Docker project with www and www-with-bun services
+# Makefile — Docker project with www, web, and api services
 # Usage: make <target> [SERVICE=<service>]
 # ==============================================================================
 
 # --- Config -------------------------------------------------------------------
 COMPOSE_FILE    := compose.yml
+COMPOSE_DEV_FILE:= compose.dev.yml
 DOCKER_COMPOSE  := docker compose -f $(COMPOSE_FILE)
+DOCKER_COMPOSE_DEV := docker compose -f $(COMPOSE_FILE) -f $(COMPOSE_DEV_FILE)
 
 # Default service (override with: make build SERVICE=api)
 SERVICE         ?=
@@ -24,7 +26,10 @@ help: ## Show this help message
 	@echo ""
 	@echo "  $(CYAN)Usage:$(RESET)  make <target> [SERVICE=<service-name>]"
 	@echo ""
-	@echo "  Services:  www-with-bun | web | api | shared"
+	@echo "  Services:  www | web | api"
+	@echo ""
+	@echo "  Dev Commands:"
+	@echo "    dev, dev-build, dev-api, dev-web, dev-www"
 	@echo ""
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ { printf "  $(CYAN)%-20s$(RESET) %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 	@echo ""
@@ -53,6 +58,22 @@ build-web: ## Build only the web service
 .PHONY: build-api
 build-api: ## Build only the api service
 	$(DOCKER_COMPOSE) build api
+
+.PHONY: build-dev
+build-dev: ## Build dev images (using compose.dev.yml)
+	$(DOCKER_COMPOSE_DEV) build
+
+.PHONY: build-dev-api
+build-dev-api: ## Build only api dev image
+	$(DOCKER_COMPOSE_DEV) build api
+
+.PHONY: build-dev-web
+build-dev-web: ## Build only web dev image
+	$(DOCKER_COMPOSE_DEV) build web
+
+.PHONY: build-dev-www
+build-dev-www: ## Build only www dev image
+	$(DOCKER_COMPOSE_DEV) build www
 
 
 # ==============================================================================
@@ -96,6 +117,14 @@ down: ## Stop and remove containers (keeps volumes & images)
 down-v: ## Stop and remove containers AND volumes (⚠ deletes data)
 	$(DOCKER_COMPOSE) down -v
 
+.PHONY: down-dev
+down-dev: ## Stop and remove dev containers (keeps volumes & images)
+	$(DOCKER_COMPOSE_DEV) down
+
+.PHONY: down-dev-v
+down-dev-v: ## Stop and remove dev containers AND volumes
+	$(DOCKER_COMPOSE_DEV) down -v
+
 .PHONY: stop
 stop: ## Stop containers without removing them
 	$(DOCKER_COMPOSE) stop $(SERVICE)
@@ -121,6 +150,14 @@ logs-bun: ## Tail logs for www-with-bun only
 logs-api: ## Tail logs for api only
 	$(DOCKER_COMPOSE) logs -f api
 
+.PHONY: logs-dev
+logs-dev: ## Tail logs for all dev services
+	$(DOCKER_COMPOSE_DEV) logs -f
+
+.PHONY: logs-dev-api
+logs-dev-api: ## Tail logs for api dev service only
+	$(DOCKER_COMPOSE_DEV) logs -f api
+
 
 # ==============================================================================
 # Shell / Exec
@@ -141,6 +178,10 @@ shell-bun: ## Open a shell inside www-with-bun
 shell-api: ## Open a shell inside api
 	$(DOCKER_COMPOSE) exec api sh
 
+.PHONY: shell-dev-api
+shell-dev-api: ## Open a shell inside api dev container
+	$(DOCKER_COMPOSE_DEV) exec api sh
+
 
 # ==============================================================================
 # Status
@@ -149,6 +190,10 @@ shell-api: ## Open a shell inside api
 .PHONY: ps
 ps: ## Show running containers and their status
 	$(DOCKER_COMPOSE) ps
+
+.PHONY: ps-dev
+ps-dev: ## Show running dev containers and their status
+	$(DOCKER_COMPOSE_DEV) ps
 
 .PHONY: stats
 stats: ## Live resource usage (CPU, RAM) for all containers
@@ -174,11 +219,27 @@ prune: ## Remove unused Docker system resources (global)
 
 .PHONY: dev
 dev: ## Start all services in development mode (live reload)
-	docker compose -f compose.yml -f compose.dev.yml up
+	$(DOCKER_COMPOSE_DEV) up
 
 .PHONY: dev-build
 dev-build: ## Rebuild dev image then start
-	docker compose -f compose.yml -f compose.dev.yml up --build
+	$(DOCKER_COMPOSE_DEV) up --build
+
+.PHONY: dev-api
+dev-api: ## Start only api in development mode (with live reload)
+	$(DOCKER_COMPOSE_DEV) up api
+
+.PHONY: dev-api-build
+dev-api-build: ## Rebuild and start only api in development mode
+	$(DOCKER_COMPOSE_DEV) up api --build
+
+.PHONY: dev-web
+dev-web: ## Start only web in development mode (with live reload)
+	$(DOCKER_COMPOSE_DEV) up web
+
+.PHONY: dev-www
+dev-www: ## Start only www in development mode (with live reload)
+	$(DOCKER_COMPOSE_DEV) up www
 
 # ==============================================================================
 # Dev helpers
