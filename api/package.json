@@ -21,13 +21,18 @@
 	"dependencies": {
 		"@nestjs/common": "^11.0.1",
 		"@nestjs/core": "^11.0.1",
+		"@nestjs/jwt": "^11.0.2",
 		"@nestjs/platform-express": "^11.0.1",
 		"@nestjs/swagger": "11.2.6",
+		"@nestjs/typeorm": "^11.0.0",
 		"@scalar/nestjs-api-reference": "^1.1.0",
 		"@t3-oss/env-core": "^0.13.10",
 		"dotenv": "^17.3.1",
+		"pg": "^8.20.0",
 		"reflect-metadata": "^0.2.2",
 		"rxjs": "^7.8.1",
+		"typeorm": "^0.3.28",
+		"uuid": "^11.0.5",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
