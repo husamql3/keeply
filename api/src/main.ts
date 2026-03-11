@@ -1,4 +1,4 @@
-import { ConsoleLogger } from "@nestjs/common";
+import { ConsoleLogger, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { apiReference } from "@scalar/nestjs-api-reference";
@@ -16,6 +16,13 @@ async function bootstrap() {
 
 	app.setGlobalPrefix("api");
 
+	app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
+
+	app.enableCors({
+		origin: env.NODE_ENV === "production" ? [] : ["http://localhost:3000"],
+		credentials: true,
+	});
+
 	const options = new DocumentBuilder()
 		.setTitle("Keeply API")
 		.setDescription("Keeply API documentation")
@@ -23,7 +30,6 @@ async function bootstrap() {
 		.build();
 
 	const document = SwaggerModule.createDocument(app, options);
-	SwaggerModule.setup("api/docs", app, document);
 
 	app.use(
 		"/api/reference",

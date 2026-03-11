@@ -31,6 +31,9 @@ export const env = z
 		JWT_SECRET: z.string(),
 		JWT_EXPIRATION: z.coerce.number(),
 		REFRESH_TOKEN_SECRET: z.string(),
-		REFRESH_TOKEN_EXPIRATION: z.string(),
+		REFRESH_TOKEN_EXPIRATION: z.coerce.number(),
+
+		// Bcrypt
+		BCRYPT_SALT_ROUNDS: z.coerce.number(),
 	})
 	.parse(process.env);

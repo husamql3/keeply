@@ -29,36 +29,29 @@ export class RefreshTokenService {
 		return plainToken;
 	}
 
-	async validate(token: string): Promise<{ record: RefreshToken; newToken: string }> {
+	async validate(token: string): Promise<{ userId: string; newToken: string }> {
 		const tokenHash = this.hashToken(token);
+		const now = new Date();
 
-		// Find valid, non-expired token and mark it as used in one operation
-		const record = await this.refreshTokenRepo.findOne({
-			where: {
-				tokenHash,
-				revoked: false,
-			},
-		});
+		// Atomically revoke the token only if it's valid and non-expired.
+		// If two concurrent requests race with the same token, only one UPDATE
+		// will match (affected === 1); the other gets affected === 0 → 401.
+		const result = await this.refreshTokenRepo
+			.createQueryBuilder()
+			.update(RefreshToken)
+			.set({ revoked: true })
+			.where('"tokenHash" = :tokenHash AND revoked = false AND "expiresAt" > :now', { tokenHash, now })
+			.returning('"userId"')
+			.execute();
 
-		if (!record) {
-			throw new UnauthorizedException("Refresh token not found");
+		if (!result.affected || result.affected === 0) {
+			throw new UnauthorizedException("Refresh token invalid or expired");
 		}
 
-		if (record.expiresAt < new Date()) {
-			// Revoke expired token to prevent reuse
-			await this.revokeByHash(tokenHash);
-			throw new UnauthorizedException("Refresh token expired");
-		}
+		const userId: string = result.raw[0].userId;
+		const newToken = await this.create(userId);
 
-		// Revoke current token and issue a new one to prevent reuse
-		await this.revokeByHash(tokenHash);
-		const newPlainToken = await this.create(record.userId);
-
-		return { record, newToken: newPlainToken };
-	}
-
-	generateTokenString(): string {
-		return randomBytes(32).toString("hex");
+		return { userId, newToken };
 	}
 
 	hashToken(token: string): string {
@@ -85,6 +78,14 @@ export class RefreshTokenService {
 
 	// Delete expired refresh tokens - used in a cron job
 	async deleteExpired(): Promise<void> {
-		await this.refreshTokenRepo.createQueryBuilder().delete().where("expiresAt < :now", { now: new Date() }).execute();
+		await this.refreshTokenRepo
+			.createQueryBuilder()
+			.delete()
+			.where('"expiresAt" < :now', { now: new Date() })
+			.execute();
+	}
+
+	private generateTokenString(): string {
+		return randomBytes(32).toString("hex");
 	}
 }

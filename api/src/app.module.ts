@@ -3,19 +3,19 @@ import { TypeOrmModule, TypeOrmModuleOptions } from "@nestjs/typeorm";
 
 import { AppController } from "@/app.controller";
 import { AppService } from "@/app.service";
+import { AuthModule } from "@/auth/auth.module";
 import { dbConfig } from "@/config/db";
-
-import { RefreshTokenService } from "./auth/service/refresh-token/refresh-token.service";
-import { entities } from "./entity";
+import { UserModule } from "@/user/user.module";
 
 @Module({
 	imports: [
 		TypeOrmModule.forRootAsync({
 			useFactory: () => dbConfig as TypeOrmModuleOptions,
 		}),
-		TypeOrmModule.forFeature(entities),
+		AuthModule,
+		UserModule,
 	],
 	controllers: [AppController],
-	providers: [AppService, RefreshTokenService],
+	providers: [AppService],
 })
 export class AppModule {}
