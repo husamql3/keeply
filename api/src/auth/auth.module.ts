@@ -7,11 +7,12 @@ import { AuthService } from "@/auth/service/auth/auth.service";
 import { RefreshTokenService } from "@/auth/service/refresh-token/refresh-token.service";
 import { RefreshToken } from "@/entity/refresh-token.entity";
 import { UserModule } from "@/user/user.module";
+import { MagicLinkService } from './service/magic-link/magic-link.service';
 
 @Module({
 	imports: [TypeOrmModule.forFeature([RefreshToken]), JwtModule.register({}), UserModule],
 	controllers: [AuthController],
-	providers: [AuthService, RefreshTokenService],
+	providers: [AuthService, RefreshTokenService, MagicLinkService],
 	exports: [AuthService],
 })
 export class AuthModule {}

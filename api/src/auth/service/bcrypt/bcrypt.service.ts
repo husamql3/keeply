@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import bcrypt from "bcryptjs";
+import { createHash, randomBytes } from "crypto";
+import { hash as bcryptHash, compare as bcryptCompare } from "bcryptjs";
 
 import { env } from "@/config/env";
 
@@ -7,11 +8,19 @@ import { env } from "@/config/env";
 export class BcryptService {
 	private readonly saltRounds = Number(env.BCRYPT_SALT_ROUNDS);
 
-	public async hash(plain: string): Promise<string> {
-		return bcrypt.hash(plain, this.saltRounds);
+	public hash(plain: string) {
+		return bcryptHash(plain, this.saltRounds);
 	}
 
-	public async compare(plain: string, hashed: string): Promise<boolean> {
-		return bcrypt.compare(plain, hashed);
+	public compare(plain: string, hashed: string) {
+		return bcryptCompare(plain, hashed);
+	}
+
+	public generateToken(): string {
+		return randomBytes(32).toString('hex');
+	}
+
+	public generateTokenHash(token: string) {
+		return createHash('sha256').update(token).digest('hex');
 	}
 }

@@ -35,5 +35,17 @@ export const env = z
 
 		// Bcrypt
 		BCRYPT_SALT_ROUNDS: z.coerce.number(),
+
+		// SMTP
+		SMTP_HOST: z.string(),
+		SMTP_PORT: z.coerce.number(),
+		SMTP_USER: z.string(),
+		SMTP_PASS: z.string(),
+
+		// Magic Link
+		MAGIC_LINK_EXPIRATION: z.coerce.number(),
+
+		// Frontend URL
+		FRONTEND_URL: z.string(),
 	})
 	.parse(process.env);
