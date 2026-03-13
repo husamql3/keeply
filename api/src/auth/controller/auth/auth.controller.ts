@@ -26,6 +26,7 @@ export class AuthController {
 		private readonly refreshTokenService: RefreshTokenService,
 	) {}
 
+	@HttpCode(201)
 	@Post("register")
 	@ApiOperation({ summary: "Register a new user" })
 	@ApiBody({ type: RegisterDto })

@@ -1,6 +1,6 @@
 import { randomBytes, createHash } from "crypto";
 
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -9,12 +9,16 @@ import { RefreshToken } from "@/entity/refresh-token.entity";
 
 @Injectable()
 export class RefreshTokenService {
+	private readonly logger = new Logger(RefreshTokenService.name);
+
 	constructor(
 		@InjectRepository(RefreshToken)
 		private readonly refreshTokenRepo: Repository<RefreshToken>,
 	) {}
 
 	async create(userId: string): Promise<string> {
+		this.logger.log(`Creating refresh token for user: ${userId}`);
+
 		const plainToken = this.generateTokenString();
 		const tokenHash = this.hashToken(plainToken);
 		const expiresAt = new Date(Date.now() + env.REFRESH_TOKEN_EXPIRATION);
@@ -26,10 +30,13 @@ export class RefreshTokenService {
 			revoked: false,
 		});
 
+		this.logger.log(`Refresh token created for user: ${userId}`);
 		return plainToken;
 	}
 
 	async validate(token: string): Promise<{ userId: string; newToken: string }> {
+		this.logger.log("Validating refresh token");
+
 		const tokenHash = this.hashToken(token);
 		const now = new Date();
 
@@ -45,10 +52,13 @@ export class RefreshTokenService {
 			.execute();
 
 		if (!result.affected || result.affected === 0) {
+			this.logger.warn("Refresh token validation failed: invalid or expired token");
 			throw new UnauthorizedException("Refresh token invalid or expired");
 		}
 
 		const userId: string = result.raw[0].userId;
+		this.logger.log(`Refresh token validated for user: ${userId}`);
+
 		const newToken = await this.create(userId);
 
 		return { userId, newToken };
@@ -59,30 +69,44 @@ export class RefreshTokenService {
 	}
 
 	async find(token: string): Promise<RefreshToken | null> {
+		this.logger.debug("Finding refresh token");
 		const tokenHash = this.hashToken(token);
-		return this.refreshTokenRepo.findOne({ where: { tokenHash } });
+		const found = await this.refreshTokenRepo.findOne({ where: { tokenHash } });
+		if (found) {
+			this.logger.debug(`Refresh token found for user: ${found.userId}`);
+		} else {
+			this.logger.debug("Refresh token not found");
+		}
+		return found;
 	}
 
 	async revoke(token: string): Promise<void> {
+		this.logger.log("Revoking refresh token");
 		const tokenHash = this.hashToken(token);
 		await this.revokeByHash(tokenHash);
 	}
 
 	private async revokeByHash(tokenHash: string): Promise<void> {
+		this.logger.debug(`Revoking token by hash: ${tokenHash.substring(0, 8)}...`);
 		await this.refreshTokenRepo.update({ tokenHash }, { revoked: true });
+		this.logger.debug("Token revoked successfully");
 	}
 
 	async revokeAll(userId: string): Promise<void> {
+		this.logger.log(`Revoking all refresh tokens for user: ${userId}`);
 		await this.refreshTokenRepo.update({ userId }, { revoked: true });
+		this.logger.log(`All refresh tokens revoked for user: ${userId}`);
 	}
 
 	// Delete expired refresh tokens - used in a cron job
 	async deleteExpired(): Promise<void> {
-		await this.refreshTokenRepo
+		this.logger.log("Deleting expired refresh tokens");
+		const result = await this.refreshTokenRepo
 			.createQueryBuilder()
 			.delete()
 			.where('"expiresAt" < :now', { now: new Date() })
 			.execute();
+		this.logger.log(`Deleted ${result.affected || 0} expired refresh tokens`);
 	}
 
 	private generateTokenString(): string {

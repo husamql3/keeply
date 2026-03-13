@@ -1,53 +1,76 @@
-import { EmailService } from '@/common/service/email/email.service';
-import { MagicLinkToken } from '@/entity/magic-link-token.entity';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { BcryptService } from '@/auth/service/bcrypt/bcrypt.service';
-import { env } from '@/config/env';
+import { Injectable, Logger, UnauthorizedException } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+
+import { AuthService } from "@/auth/service/auth/auth.service";
+import { BcryptService } from "@/auth/service/bcrypt/bcrypt.service";
+import { JwtSign } from "@/auth/types/auth.type";
+import { EmailService } from "@/common/service/email/email.service";
+import { env } from "@/config/env";
+import { MagicLinkToken } from "@/entity/magic-link-token.entity";
+import { UserService } from "@/user/service/user/user.service";
 
 @Injectable()
 export class MagicLinkService {
-  constructor(
-    @InjectRepository(MagicLinkToken)
-    private readonly magicLinkTokenRepo: Repository<MagicLinkToken>,
-    private readonly emailService: EmailService,
-    private readonly bcryptService: BcryptService,
-  ) { }
+	private readonly logger = new Logger(MagicLinkService.name);
 
-  async create(email: string): Promise<void> {
-    const token = this.bcryptService.generateToken();
-    const tokenHash = await this.bcryptService.hash(token);
+	constructor(
+		@InjectRepository(MagicLinkToken)
+		private readonly magicLinkTokenRepo: Repository<MagicLinkToken>,
+		private readonly emailService: EmailService,
+		private readonly bcryptService: BcryptService,
+		private readonly userService: UserService,
+		private readonly authService: AuthService,
+	) {}
 
-    const expiresAt = new Date(Date.now() + env.MAGIC_LINK_EXPIRATION * 60 * 1000);
+	async create(email: string): Promise<void> {
+		const token = this.bcryptService.generateToken();
+		const tokenHash = this.bcryptService.generateTokenHash(token);
 
-    const magicLinkToken = this.magicLinkTokenRepo.create({
-      email,
-      tokenHash,
-      expiresAt,
-    });
+		const expiresAt = new Date(Date.now() + env.MAGIC_LINK_EXPIRATION * 60 * 1000);
+		this.logger.log(
+			`Creating magic link token for ${email} with expiration ${expiresAt.toISOString()}. Token: ${token}`,
+		);
 
-    await this.magicLinkTokenRepo.save(magicLinkToken);
+		const magicLinkToken = this.magicLinkTokenRepo.create({
+			email,
+			tokenHash,
+			expiresAt,
+		});
 
-    await this.emailService.sendEmail(email, 'Magic Link', `Click <a href="${env.FRONTEND_URL}/magic-link?token=${token}">here</a> to login`);
-  }
+		await this.magicLinkTokenRepo.save(magicLinkToken);
+		this.logger.log(`Sending magic link email to ${email}. Token: ${token}. Expires at: ${expiresAt.toISOString()}`);
 
-  async verify(token: string) {
-    const tokenHash = this.bcryptService.generateTokenHash(token);
-    const magicLinkToken = await this.magicLinkTokenRepo.findOne({ where: { tokenHash } });
-    if (!magicLinkToken || magicLinkToken.used || magicLinkToken.expiresAt < new Date()) {
-      throw new UnauthorizedException('Invalid or expired token');
-    }
+		await this.emailService.sendEmail(
+			email,
+			"Magic Link",
+			`Click <a href="${env.FRONTEND_URL}/magic-link?token=${token}">here</a> to login`,
+		);
+		this.logger.log(`Magic link email sent to ${email}. Token: ${token}. Expires at: ${expiresAt.toISOString()}`);
+	}
 
-    await this.magicLinkTokenRepo.update(magicLinkToken.id, { used: true });
-  }
+	async verify(token: string): Promise<JwtSign> {
+		const tokenHash = this.bcryptService.generateTokenHash(token);
+		this.logger.log(`Verifying magic link token for ${tokenHash}`);
 
-  async useToken(token: string): Promise<void> {
-    const magicLinkToken = await this.magicLinkTokenRepo.findOne({ where: { tokenHash: token } });
-    if (!magicLinkToken) {
-      throw new UnauthorizedException('Invalid token');
-    }
+		const magicLinkToken = await this.magicLinkTokenRepo.findOne({ where: { tokenHash, used: false } });
+		if (!magicLinkToken || magicLinkToken.expiresAt < new Date()) {
+			this.logger.error(
+				`Invalid or expired token for ${tokenHash}. Expires at: ${magicLinkToken?.expiresAt?.toISOString()}`,
+			);
+			throw new UnauthorizedException("Invalid or expired token");
+		}
 
-    await this.magicLinkTokenRepo.update(magicLinkToken.id, { used: true });
-  }
+		// Mark the token as used
+		await this.magicLinkTokenRepo.update(magicLinkToken.id, { used: true });
+
+		const user = await this.userService.findUserByEmail(magicLinkToken.email);
+		if (!user) {
+			this.logger.error(`User not found for ${magicLinkToken.email}`);
+			throw new UnauthorizedException("User not found");
+		}
+
+		this.logger.log(`User ${user.id} verified magic link token for ${magicLinkToken.email}`);
+		return this.authService.signToken({ sub: user.id, name: user.name, role: user.role });
+	}
 }

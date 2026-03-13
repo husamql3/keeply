@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -8,6 +8,8 @@ import { User } from "@/entity/user.entity";
 
 @Injectable()
 export class UserService {
+	private readonly logger = new Logger(UserService.name);
+
 	constructor(
 		@InjectRepository(User)
 		private readonly userRepo: Repository<User>,
@@ -15,7 +17,14 @@ export class UserService {
 	) {}
 
 	async findUserByEmail(email: string): Promise<User | null> {
-		return this.userRepo.findOne({ where: { email } });
+		this.logger.debug(`Finding user by email: ${email}`);
+		const user = await this.userRepo.findOne({ where: { email } });
+		if (user) {
+			this.logger.debug(`User found: ${user.id}`);
+		} else {
+			this.logger.debug(`User not found for email: ${email}`);
+		}
+		return user;
 	}
 
 	async findUserById(id: string): Promise<User | null> {

@@ -1,18 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MagicLinkService } from './magic-link.service';
+import { Test, TestingModule } from "@nestjs/testing";
 
-describe('MagicLinkService', () => {
-  let service: MagicLinkService;
+import { MagicLinkService } from "./magic-link.service";
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [MagicLinkService],
-    }).compile();
+describe("MagicLinkService", () => {
+	let service: MagicLinkService;
 
-    service = module.get<MagicLinkService>(MagicLinkService);
-  });
+	beforeEach(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [MagicLinkService],
+		}).compile();
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+		service = module.get<MagicLinkService>(MagicLinkService);
+	});
+
+	it("should be defined", () => {
+		expect(service).toBeDefined();
+	});
 });
