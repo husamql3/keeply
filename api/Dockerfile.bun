@@ -60,6 +60,9 @@ ENV NODE_ENV=production
 # Build NestJS application
 RUN bun run --filter api build
 
+# Prune to production-only dependencies so the runner stage doesn't inherit dev deps
+RUN bun install --production --frozen-lockfile
+
 # ============================================
 # Stage 3: Run NestJS application
 # ============================================
@@ -86,4 +89,4 @@ USER bun
 EXPOSE 4000
 
 # Start NestJS server with Bun
-CMD ["bun", "run", "--filter", "api", "start:prod"]
+CMD ["bun", "api/dist/main.js"]

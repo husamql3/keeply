@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from "@nestjs/common";
+import { Body, Controller, HttpCode, Post, UsePipes, ValidationPipe } from "@nestjs/common";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { LoginDto } from "@/auth/dto/login.dto";
@@ -33,21 +33,23 @@ export class AuthController {
 	@ApiResponse({ status: 201, description: "User created; returns token pair", schema: jwtSignSchema })
 	@ApiResponse({ status: 400, description: "Validation error" })
 	@ApiResponse({ status: 409, description: "Email already in use" })
+	@UsePipes(ValidationPipe)
 	async register(@Body() dto: RegisterDto): Promise<JwtSign> {
 		const user = await this.userService.create(dto);
-		return this.authService.signToken({ sub: user.id, name: user.name, role: user.role });
+		return this.authService.signToken({ sub: user.id, name: user.name ?? "", role: user.role });
 	}
 
 	@HttpCode(200)
 	@Post("login")
 	@ApiOperation({ summary: "Login with email and password" })
+	@UsePipes(ValidationPipe)
 	@ApiBody({ type: LoginDto })
 	@ApiResponse({ status: 200, description: "Returns token pair", schema: jwtSignSchema })
 	@ApiResponse({ status: 400, description: "Validation error" })
 	@ApiResponse({ status: 401, description: "Invalid credentials" })
 	async login(@Body() dto: LoginDto): Promise<JwtSign> {
 		const user = await this.authService.validateUser(dto.email, dto.password);
-		return this.authService.signToken({ sub: user.id, name: user.name, role: user.role });
+		return this.authService.signToken({ sub: user.id, name: user.name ?? "", role: user.role });
 	}
 
 	@HttpCode(200)
@@ -56,6 +58,7 @@ export class AuthController {
 	@ApiBody({ type: RefreshTokenDto })
 	@ApiResponse({ status: 200, description: "Returns a new token pair", schema: jwtSignSchema })
 	@ApiResponse({ status: 401, description: "Refresh token invalid or expired" })
+	@UsePipes(ValidationPipe)
 	async refresh(@Body() dto: RefreshTokenDto): Promise<JwtSign> {
 		return this.authService.refresh(dto.refresh_token);
 	}
@@ -66,6 +69,7 @@ export class AuthController {
 	@ApiBody({ type: RefreshTokenDto })
 	@ApiResponse({ status: 204, description: "Token revoked" })
 	@ApiResponse({ status: 401, description: "Refresh token not found" })
+	@UsePipes(ValidationPipe)
 	async logout(@Body() dto: RefreshTokenDto): Promise<void> {
 		await this.refreshTokenService.revoke(dto.refresh_token);
 	}

@@ -28,9 +28,7 @@ export class MagicLinkService {
 		const tokenHash = this.bcryptService.generateTokenHash(token);
 
 		const expiresAt = new Date(Date.now() + env.MAGIC_LINK_EXPIRATION * 60 * 1000);
-		this.logger.log(
-			`Creating magic link token for ${email} with expiration ${expiresAt.toISOString()}. Token: ${token}`,
-		);
+		this.logger.log(`Creating magic link token for ${email} with expiration ${expiresAt.toISOString()}`);
 
 		const magicLinkToken = this.magicLinkTokenRepo.create({
 			email,
@@ -39,19 +37,19 @@ export class MagicLinkService {
 		});
 
 		await this.magicLinkTokenRepo.save(magicLinkToken);
-		this.logger.log(`Sending magic link email to ${email}. Token: ${token}. Expires at: ${expiresAt.toISOString()}`);
+		this.logger.log(`Sending magic link email to ${email}. Expires at: ${expiresAt.toISOString()}`);
 
 		await this.emailService.sendEmail(
 			email,
 			"Magic Link",
 			`Click <a href="${env.FRONTEND_URL}/magic-link?token=${token}">here</a> to login`,
 		);
-		this.logger.log(`Magic link email sent to ${email}. Token: ${token}. Expires at: ${expiresAt.toISOString()}`);
+		this.logger.log(`Magic link email sent to ${email}. Expires at: ${expiresAt.toISOString()}`);
 	}
 
 	async verify(token: string): Promise<JwtSign> {
 		const tokenHash = this.bcryptService.generateTokenHash(token);
-		this.logger.log(`Verifying magic link token for ${tokenHash}`);
+		this.logger.log("Verifying magic link token");
 
 		const magicLinkToken = await this.magicLinkTokenRepo.findOne({ where: { tokenHash, used: false } });
 		if (!magicLinkToken || magicLinkToken.expiresAt < new Date()) {
@@ -61,8 +59,10 @@ export class MagicLinkService {
 			throw new UnauthorizedException("Invalid or expired token");
 		}
 
-		// Mark the token as used
-		await this.magicLinkTokenRepo.update(magicLinkToken.id, { used: true });
+		const { affected } = await this.magicLinkTokenRepo.update({ id: magicLinkToken.id, used: false }, { used: true });
+		if (affected !== 1) {
+			throw new UnauthorizedException("Invalid or expired token");
+		}
 
 		const user = await this.userService.findUserByEmail(magicLinkToken.email);
 		if (!user) {
@@ -71,6 +71,6 @@ export class MagicLinkService {
 		}
 
 		this.logger.log(`User ${user.id} verified magic link token for ${magicLinkToken.email}`);
-		return this.authService.signToken({ sub: user.id, name: user.name, role: user.role });
+		return this.authService.signToken({ sub: user.id, name: user.name ?? "", role: user.role });
 	}
 }

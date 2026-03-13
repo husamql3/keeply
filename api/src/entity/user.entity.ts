@@ -14,12 +14,12 @@ export class User {
 	id: string;
 
 	@Column({ nullable: true })
-	name: string;
+	name: string | null;
 
 	@Column({ unique: true, nullable: false })
 	email: string;
 
-	@Column({ nullable: false })
+	@Column({ nullable: true })
 	password: string;
 
 	@Column({ type: "enum", enum: Role, default: Role.USER })
