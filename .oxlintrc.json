@@ -35,5 +35,5 @@
 		"builtin": true
 	},
 	"globals": {},
-	"ignorePatterns": ["src/router.tsx"]
+	"ignorePatterns": ["src/router.tsx", "build/**", "public/**", "**/routeTree.gen.ts"]
 }
