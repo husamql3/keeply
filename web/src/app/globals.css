@@ -1,26 +1,90 @@
 @import "tailwindcss";
 
-:root {
-	--background: #ffffff;
-	--foreground: #171717;
-}
-
 @theme inline {
-	--color-background: var(--background);
-	--color-foreground: var(--foreground);
-	--font-sans: var(--font-geist-sans);
-	--font-mono: var(--font-geist-mono);
+	--font-sans: var(--font-outfit);
+	--font-serif: var(--font-cormorant);
+	--font-mono: var(--font-jetbrains);
 }
 
-@media (prefers-color-scheme: dark) {
-	:root {
-		--background: #0a0a0a;
-		--foreground: #ededed;
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html,
+body {
+	height: 100%;
+	background: #090909;
+	color: #e0e0e0;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Thin scrollbar */
+::-webkit-scrollbar {
+	width: 3px;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+::-webkit-scrollbar-thumb {
+	background: #222;
+	border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: #2e2e2e;
+}
+
+/* Shimmer for loading skeletons */
+@keyframes shimmer {
+	0% {
+		background-position: -600px 0;
+	}
+	100% {
+		background-position: 600px 0;
 	}
 }
 
-body {
-	background: var(--background);
-	color: var(--foreground);
-	font-family: Arial, Helvetica, sans-serif;
+.shimmer {
+	background: linear-gradient(90deg, #161616 25%, #1f1f1f 50%, #161616 75%);
+	background-size: 1200px 100%;
+	animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Slide-down entry animation for bookmark rows */
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-5px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.animate-slide-down {
+	animation: slideDown 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Fade-in for the layout */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.animate-fade-in {
+	animation: fadeIn 0.4s ease both;
+}
+
+/* URL input subtle focus shadow */
+.url-input:focus {
+	box-shadow: 0 0 0 1px #232323 inset, 0 4px 16px rgba(0, 0, 0, 0.4);
 }

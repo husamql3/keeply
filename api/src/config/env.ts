@@ -47,5 +47,9 @@ export const env = z
 
 		// Frontend URL
 		FRONTEND_URL: z.string(),
+
+		// OAuth
+		GOOGLE_OAUTH_CLIENT_ID: z.string(),
+		GOOGLE_OAUTH_CLIENT_SECRET: z.string(),
 	})
 	.parse(process.env);

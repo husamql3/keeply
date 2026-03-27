@@ -14,7 +14,7 @@ export class RefreshTokenService {
 	constructor(
 		@InjectRepository(RefreshToken)
 		private readonly refreshTokenRepo: Repository<RefreshToken>,
-	) {}
+	) { }
 
 	async create(userId: string): Promise<string> {
 		this.logger.log(`Creating refresh token for user: ${userId}`);
