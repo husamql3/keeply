@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { IconAt } from "@tabler/icons-react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 
 import { Grainient } from "@/components/grainient";
@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { useWishlist } from "@/hooks/use-wishlist";
+import { authClient } from "@/lib/auth-client";
 import { WishlistForm, wishlistSchema } from "@/types/wishlist.types";
 import { formatWaitlistCount } from "@/utils/format-wishlist-count";
 
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+	const navigate = useNavigate();
 	const { count: waitlistCount, isLoadingCount, join } = useWishlist();
 
 	const {
@@ -30,6 +32,11 @@ function Home() {
 	const onSubmit = async ({ email }: WishlistForm) => {
 		await join(email);
 		reset();
+	};
+
+	const logout = async () => {
+		await authClient.signOut();
+		navigate({ to: "/login" });
 	};
 
 	return (
@@ -62,6 +69,7 @@ function Home() {
 			</div>
 
 			<div className="relative z-10 flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
+				<Button onClick={logout}>Logout</Button>
 				<img
 					src="/icon-light.png"
 					alt="Keeply"

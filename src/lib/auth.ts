@@ -5,6 +5,7 @@ import { tanstackStartCookies } from "better-auth/tanstack-start";
 
 import { db } from "@/db";
 import { env } from "@/env";
+import { sendEmail } from "@/lib/email/send-email";
 
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
@@ -28,8 +29,16 @@ export const auth = betterAuth({
 		tanstackStartCookies(),
 		emailOTP({
 			async sendVerificationOTP({ email, otp }: { email: string; otp: string }) {
-				// TODO: send OTP email to `email`
-				console.log(`OTP for ${email}: ${otp}`);
+				try {
+					await sendEmail({
+						to: email,
+						subject: "Keeply - Verification Code",
+						html: `Your verification code is: ${otp}`,
+					});
+				} catch (error) {
+					console.error(error);
+					throw new Error("Failed to send verification email.");
+				}
 			},
 		}),
 	],

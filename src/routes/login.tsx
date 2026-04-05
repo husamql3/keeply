@@ -4,6 +4,7 @@ import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-ro
 import type React from "react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { sileo } from "sileo";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -48,26 +49,46 @@ function RouteComponent() {
 		defaultValues: { otp: "" },
 	});
 
-	async function handleSendOtp({ email }: EmailValues) {
-		console.log("handleSendOtp", email);
-		const { error } = await authClient.emailOtp.sendVerificationOtp({ email, type: "sign-in" });
-		if (error) {
-			emailForm.setError("root", { message: error.message ?? "Failed to send code." });
-			return;
-		}
-		setEmail(email);
-		setStep("otp");
-	}
+	const handleSendOtp = async ({ email }: EmailValues) => {
+		const promise = authClient.emailOtp.sendVerificationOtp({ email, type: "sign-in" }).then(({ error }) => {
+			if (error) throw new Error(error.message ?? "Failed to send code.");
+		});
 
-	async function handleVerifyOtp({ otp }: OtpValues) {
-		console.log("handleVerifyOtp", otp);
-		const { error } = await authClient.signIn.emailOtp({ email, otp });
-		if (error) {
-			otpForm.setError("root", { message: error.message ?? "Invalid code. Please try again." });
-			return;
-		}
-		navigate({ to: "/" });
-	}
+		sileo.promise(promise, {
+			loading: { title: "Sending code...", description: "Please wait" },
+			success: { title: "Code sent!", description: "Check your inbox." },
+			error: (error) => ({
+				title: "Failed to send code",
+				description: error instanceof Error ? error.message : "Please try again.",
+			}),
+		});
+
+		try {
+			await promise;
+			setEmail(email);
+			setStep("otp");
+		} catch {}
+	};
+
+	const handleVerifyOtp = async ({ otp }: OtpValues) => {
+		const promise = authClient.signIn.emailOtp({ email, otp }).then(({ error }) => {
+			if (error) throw new Error(error.message ?? "Invalid code. Please try again.");
+		});
+
+		sileo.promise(promise, {
+			loading: { title: "Verifying code...", description: "Please wait" },
+			success: { title: "Welcome to Keeply!", description: "You're now logged in." },
+			error: (error) => ({
+				title: "Invalid code",
+				description: error instanceof Error ? error.message : "Please try again.",
+			}),
+		});
+
+		try {
+			await promise;
+			navigate({ to: "/" });
+		} catch {}
+	};
 
 	return (
 		<div className="relative w-full overflow-hidden md:h-screen">
@@ -108,10 +129,8 @@ function RouteComponent() {
 									<IconAt />
 								</InputGroupAddon>
 							</InputGroup>
-							{(emailForm.formState.errors.email?.message || emailForm.formState.errors.root?.message) && (
-								<p className="text-destructive text-sm">
-									{emailForm.formState.errors.email?.message ?? emailForm.formState.errors.root?.message}
-								</p>
+							{emailForm.formState.errors.email?.message && (
+								<p className="text-destructive text-sm">{emailForm.formState.errors.email.message}</p>
 							)}
 							<Button
 								className="w-full"
@@ -144,10 +163,8 @@ function RouteComponent() {
 									<IconHash />
 								</InputGroupAddon>
 							</InputGroup>
-							{(otpForm.formState.errors.otp?.message || otpForm.formState.errors.root?.message) && (
-								<p className="text-destructive text-sm">
-									{otpForm.formState.errors.otp?.message ?? otpForm.formState.errors.root?.message}
-								</p>
+							{otpForm.formState.errors.otp?.message && (
+								<p className="text-destructive text-sm">{otpForm.formState.errors.otp.message}</p>
 							)}
 							<Button
 								className="w-full"
@@ -170,27 +187,31 @@ function RouteComponent() {
 						</form>
 					)}
 
-					<AuthDivider>OR CONTINUE WITH</AuthDivider>
-					<div className="space-y-2">
-						<Button
-							className="w-full"
-							type="button"
-							variant="outline"
-							onClick={() => authClient.signIn.social({ provider: "google", callbackURL: "/" })}
-						>
-							<GoogleIcon data-icon="inline-start" />
-							Google
-						</Button>
-						<Button
-							className="w-full"
-							type="button"
-							variant="outline"
-							onClick={() => authClient.signIn.social({ provider: "github", callbackURL: "/" })}
-						>
-							<GithubIcon data-icon="inline-start" />
-							GitHub
-						</Button>
-					</div>
+					{step === "email" && (
+						<>
+							<AuthDivider>OR CONTINUE WITH</AuthDivider>
+							<div className="space-y-2">
+								<Button
+									className="w-full"
+									type="button"
+									variant="outline"
+									onClick={() => authClient.signIn.social({ provider: "google", callbackURL: "/" })}
+								>
+									<GoogleIcon data-icon="inline-start" />
+									Google
+								</Button>
+								<Button
+									className="w-full"
+									type="button"
+									variant="outline"
+									onClick={() => authClient.signIn.social({ provider: "github", callbackURL: "/" })}
+								>
+									<GithubIcon data-icon="inline-start" />
+									GitHub
+								</Button>
+							</div>
+						</>
+					)}
 				</div>
 
 				<p className="text-center text-muted-foreground text-sm">
