@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { emailOTP } from "better-auth/plugins";
+import { tanstackStartCookies } from "better-auth/tanstack-start";
 
 import { db } from "@/db";
 import { env } from "@/env";
@@ -24,6 +25,7 @@ export const auth = betterAuth({
 		},
 	},
 	plugins: [
+		tanstackStartCookies(),
 		emailOTP({
 			async sendVerificationOTP({ email, otp }: { email: string; otp: string }) {
 				// TODO: send OTP email to `email`
