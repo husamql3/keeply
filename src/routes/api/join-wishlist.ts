@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import fs from "fs/promises";
 import { z } from "zod";
 
-import { transporter } from "@/lib/email";
+import { transporter } from "@/lib/email/transporter";
 import { supabase } from "@/lib/supabase";
 
 const joinWishlistSchema = z.object({

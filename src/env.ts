@@ -1,8 +1,11 @@
-import { config } from "dotenv";
 import { createEnv } from "@t3-oss/env-core";
-
-config();
+import { config } from "dotenv";
 import { z } from "zod";
+
+// Load environment variables from .env file if we are on the server
+if (typeof process !== "undefined") {
+	config();
+}
 
 export const env = createEnv({
 	server: {
@@ -45,5 +48,6 @@ export const env = createEnv({
 		VITE_SENTRY_DSN: z.string().optional(),
 	},
 	clientPrefix: "VITE_",
-	runtimeEnv: process.env,
+	// Load environment variables from .env file if we are on the client
+	runtimeEnv: typeof process !== "undefined" ? process.env : import.meta.env,
 });

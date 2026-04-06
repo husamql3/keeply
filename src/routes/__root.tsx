@@ -11,7 +11,6 @@ import { Toaster } from "sileo";
 import appCss from "@/app.css?url";
 import { DefaultCatchBoundary } from "@/components/DefaultCatchBoundary";
 import { NotFound } from "@/components/NotFound";
-import { SmoothCursor } from "@/components/ui/smooth-cursor";
 import { seo } from "@/utils/seo";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
@@ -64,16 +63,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 					<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 				</Sentry.ErrorBoundary>
 				<TanStackRouterDevtools position="bottom-right" />
-				<div className="hidden lg:block">
-					<SmoothCursor
-						springConfig={{
-							damping: 45,
-							stiffness: 600,
-							mass: 1,
-							restDelta: 0.001,
-						}}
-					/>
-				</div>
 				<Toaster
 					position="top-center"
 					theme="dark"
