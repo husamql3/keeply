@@ -40,8 +40,8 @@ function Home() {
 	};
 
 	return (
-		<div className="flex h-dvh items-center justify-center relative px-4 sm:px-6 py-8">
-			<div className="w-full h-full absolute bottom-0 left-0 pointer-events-none select-none touch-none opacity-20">
+		<div className="relative flex h-dvh items-center justify-center px-4 py-8 sm:px-6">
+			<div className="pointer-events-none absolute bottom-0 left-0 h-full w-full touch-none opacity-20 select-none">
 				<Grainient
 					color1="#4a94a2"
 					color2="#a3bf90"
@@ -68,22 +68,22 @@ function Home() {
 				/>
 			</div>
 
-			<div className="relative z-10 flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
+			<div className="relative z-10 mx-auto flex w-full max-w-2xl flex-col items-center justify-center">
 				<Button onClick={logout}>Logout</Button>
 				<img
 					src="/icon-light.png"
 					alt="Keeply"
 					width={60}
 					height={60}
-					className="mb-4 sm:mb-6 w-12 h-12 sm:w-[60px] sm:h-[60px]"
+					className="mb-4 h-12 w-12 sm:mb-6 sm:h-[60px] sm:w-[60px]"
 					loading="eager"
 				/>
 
-				<div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8 px-2">
-					<h2 className="text-center font-semibold text-2xl tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
+				<div className="mb-6 space-y-2 px-2 sm:mb-8 sm:space-y-3">
+					<h2 className="text-center text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl lg:text-5xl">
 						Save Everything. Find Anything.
 					</h2>
-					<p className="text-balance text-center text-muted-foreground text-sm sm:text-base md:text-lg max-w-xl mx-auto">
+					<p className="text-muted-foreground mx-auto max-w-xl text-center text-sm text-balance sm:text-base md:text-lg">
 						We're Building Something You'll Love.
 						<br />
 						Sign up and we'll let you know the moment it's ready.
@@ -95,7 +95,7 @@ function Home() {
 					className="w-full max-w-md px-2"
 				>
 					<div className="flex flex-col gap-1.5">
-						<Field className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-2 relative">
+						<Field className="relative flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:gap-2">
 							<FieldLabel
 								htmlFor="email-input"
 								className="sr-only"
@@ -114,17 +114,17 @@ function Home() {
 									type="email"
 									disabled={isSubmitting}
 									aria-invalid={!!errors.email}
-									className="bg-zinc-900 w-full flex-1 text-sm sm:text-base"
+									className="w-full flex-1 bg-zinc-900 text-sm sm:text-base"
 									{...register("email")}
 								/>
 							</InputGroup>
 
-							<div className="w-full! sm:w-fit! relative">
+							<div className="relative w-full! sm:w-fit!">
 								<Button
 									type="submit"
 									variant="default"
 									disabled={isSubmitting}
-									className="w-full sm:w-auto text-sm sm:text-base"
+									className="w-full text-sm sm:w-auto sm:text-base"
 								>
 									Get early access
 								</Button>
@@ -133,7 +133,7 @@ function Home() {
 									alt=""
 									width={50}
 									height={50}
-									className="absolute -top-5 -right-3 sm:-top-5 sm:-right-7 size-6 sm:size-7 pointer-events-none select-none touch-none hidden sm:block"
+									className="pointer-events-none absolute -top-5 -right-3 hidden size-6 touch-none select-none sm:-top-5 sm:-right-7 sm:block sm:size-7"
 								/>
 							</div>
 						</Field>
@@ -141,11 +141,11 @@ function Home() {
 					</div>
 				</form>
 
-				<div className="flex items-center gap-2 p-2! bg-transparent! border-none!">
+				<div className="flex items-center gap-2 border-none! bg-transparent! p-2!">
 					{isLoadingCount ? (
-						<div className="text-muted-foreground me-1.5 text-xs flex items-center gap-1.5">
+						<div className="text-muted-foreground me-1.5 flex items-center gap-1.5 text-xs">
 							<span>Joined by</span>
-							<span className="inline-block bg-muted animate-pulse rounded h-4 w-6" />
+							<span className="bg-muted inline-block h-4 w-6 animate-pulse rounded" />
 							<span>developers.</span>
 						</div>
 					) : waitlistCount !== null && waitlistCount > 0 ? (

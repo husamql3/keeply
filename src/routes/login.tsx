@@ -100,16 +100,16 @@ function RouteComponent() {
 							alt="Keeply"
 							width={40}
 							height={40}
-							className="mb-4 sm:mb-6 w-10 h-10 sm:w-[40px] sm:h-[40px]"
+							className="mb-4 h-10 w-10 sm:mb-6 sm:h-[40px] sm:w-[40px]"
 							loading="eager"
 						/>
 					</Link>
 				</div>
 
-				<div className="fade-in slide-in-from-bottom-4 w-full animate-in space-y-4 duration-600">
+				<div className="fade-in slide-in-from-bottom-4 animate-in w-full space-y-4 duration-600">
 					<div className="flex flex-col space-y-1">
-						<h1 className="font-bold text-2xl tracking-wide">Join Now!</h1>
-						<p className="text-base text-muted-foreground">
+						<h1 className="text-2xl font-bold tracking-wide">Join Now!</h1>
+						<p className="text-muted-foreground text-base">
 							{step === "email" ? "Login or create your Keeply account." : `Enter the code sent to ${email}.`}
 						</p>
 					</div>
@@ -176,7 +176,7 @@ function RouteComponent() {
 							</Button>
 							<button
 								type="button"
-								className="w-full text-center text-muted-foreground text-sm hover:text-primary"
+								className="text-muted-foreground hover:text-primary w-full text-center text-sm"
 								onClick={() => {
 									setStep("email");
 									otpForm.reset();
@@ -214,17 +214,17 @@ function RouteComponent() {
 					)}
 				</div>
 
-				<p className="text-center text-muted-foreground text-sm">
+				<p className="text-muted-foreground text-center text-sm">
 					This site is protected by reCAPTCHA and the Google{" "}
 					<a
-						className="underline underline-offset-4 hover:text-primary"
+						className="hover:text-primary underline underline-offset-4"
 						href="#"
 					>
 						Privacy Policy
 					</a>{" "}
 					and{" "}
 					<a
-						className="underline underline-offset-4 hover:text-primary"
+						className="hover:text-primary underline underline-offset-4"
 						href="#"
 					>
 						Terms of Service
@@ -243,7 +243,7 @@ export function AuthDivider({ children, ...props }: React.ComponentProps<"div">)
 			{...props}
 		>
 			<div className="w-full border-t" />
-			<div className="flex w-max justify-center text-nowrap px-2 text-muted-foreground text-xs">{children}</div>
+			<div className="text-muted-foreground flex w-max justify-center px-2 text-xs text-nowrap">{children}</div>
 			<div className="w-full border-t" />
 		</div>
 	);

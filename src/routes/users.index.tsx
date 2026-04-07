@@ -10,7 +10,7 @@ function UsersIndexComponent() {
 			Select a user or{" "}
 			<a
 				href="/api/users"
-				className="text-blue-800 hover:text-blue-600 underline"
+				className="text-blue-800 underline hover:text-blue-600"
 			>
 				view as JSON
 			</a>
