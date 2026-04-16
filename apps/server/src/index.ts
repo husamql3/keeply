@@ -5,7 +5,9 @@ import { Elysia, file } from "elysia";
 import { env } from "@/env";
 import { auth, OpenAPI } from "@/lib/auth";
 import { logger } from "@/middlewares/logger";
+import { bookmarkRoute } from "@/routes/bookmark";
 import { collectionRoute } from "@/routes/collection";
+import { ogImageRoute } from "@/routes/og-image";
 
 export default new Elysia({ prefix: "/api" })
 	.use(logger)
@@ -35,5 +37,9 @@ export default new Elysia({ prefix: "/api" })
 	)
 	.mount("/auth", auth.handler)
 	.use(collectionRoute)
+	.use(bookmarkRoute)
+	.use(ogImageRoute)
 	.get("/", () => "OK")
 	.listen(3000);
+
+console.log(env.BASE_URL + "/api");
