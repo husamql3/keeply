@@ -17,17 +17,6 @@
 		"build:server": "turbo -F server build",
 		"format": "bunx oxlint && bunx oxfmt --write"
 	},
-	"dependencies": {
-		"@better-auth/infra": "^0.1.14",
-		"elysia": "^1.4.28"
-	},
-	"devDependencies": {
-		"@types/bun": "^1.3.4",
-		"@types/node": "^22.19.17",
-		"tsdown": "^0.21.7",
-		"turbo": "^2.8.17",
-		"typescript": "^5.8.2"
-	},
 	"engines": {
 		"bun": ">=1.3.10",
 		"node": ">=18"
