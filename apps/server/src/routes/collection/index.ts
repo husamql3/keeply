@@ -16,7 +16,6 @@ export const collectionRoute = new Elysia({ prefix: "/collections" })
 		},
 		{
 			detail: {
-
 				tags: ["Collections"],
 				summary: "List collections",
 				description: "Get all collections belonging to the authenticated user",
