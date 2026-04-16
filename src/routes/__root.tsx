@@ -1,5 +1,4 @@
 import "@/lib/sentry";
-
 import * as Sentry from "@sentry/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 /// <reference types="vite/client" />

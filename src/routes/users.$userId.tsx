@@ -36,7 +36,7 @@ function UserComponent() {
 			<div>
 				<a
 					href={`/api/users/${user.id}`}
-					className="text-blue-800 hover:text-blue-600 underline"
+					className="text-blue-800 underline hover:text-blue-600"
 				>
 					View as JSON
 				</a>

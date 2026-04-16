@@ -1,7 +1,7 @@
+import fs from "fs/promises";
 import path from "node:path";
 
 import { createFileRoute } from "@tanstack/react-router";
-import fs from "fs/promises";
 import { z } from "zod";
 
 import { transporter } from "@/lib/email/transporter";

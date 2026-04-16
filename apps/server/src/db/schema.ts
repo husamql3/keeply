@@ -1,13 +1,5 @@
 import { relations } from "drizzle-orm";
-import {
-	pgTable,
-	text,
-	timestamp,
-	boolean,
-	index,
-	pgEnum,
-	integer,
-} from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, index, pgEnum, integer, uuid } from "drizzle-orm/pg-core";
 
 // ─── Auth tables (unchanged) ──────────────────────────────────────────────────
 
@@ -87,9 +79,9 @@ export const verification = pgTable(
 
 /** Privacy level for collections — maps to Phase 1 requirements. */
 export const collectionPrivacyEnum = pgEnum("collection_privacy", [
-	"private",   // owner-only
-	"unlisted",  // anyone with the link
-	"public",    // discoverable in directory
+	"private", // owner-only
+	"unlisted", // anyone with the link
+	"public", // discoverable in directory
 ]);
 
 /**
@@ -97,8 +89,8 @@ export const collectionPrivacyEnum = pgEnum("collection_privacy", [
  * Extensible — add values here as new sources are integrated.
  */
 export const sourcePlatformEnum = pgEnum("source_platform", [
-	"web",        // generic browser / extension save
-	"manual",     // entered through the manual entry form
+	"web", // generic browser / extension save
+	"manual", // entered through the manual entry form
 	"github",
 	"twitter",
 	"youtube",
@@ -155,7 +147,7 @@ export const ogImage = pgTable(
 export const collection = pgTable(
 	"collection",
 	{
-		id: text("id").primaryKey(),
+		id: uuid("id").primaryKey().defaultRandom(),
 
 		userId: text("user_id")
 			.notNull()
@@ -192,10 +184,7 @@ export const collection = pgTable(
 			.$onUpdate(() => new Date())
 			.notNull(),
 	},
-	(table) => [
-		index("collection_userId_idx").on(table.userId),
-		index("collection_privacy_idx").on(table.privacy),
-	],
+	(table) => [index("collection_userId_idx").on(table.userId), index("collection_privacy_idx").on(table.privacy)],
 );
 
 // ─── Tags ─────────────────────────────────────────────────────────────────────
@@ -256,9 +245,7 @@ export const bookmark = pgTable(
 			onDelete: "set null",
 		}),
 
-		sourcePlatform: sourcePlatformEnum("source_platform")
-			.default("manual")
-			.notNull(),
+		sourcePlatform: sourcePlatformEnum("source_platform").default("manual").notNull(),
 
 		isPinned: boolean("is_pinned").default(false).notNull(),
 		isStarred: boolean("is_starred").default(false).notNull(),

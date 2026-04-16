@@ -16,7 +16,7 @@
 			"files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
 			"options": {
 				"experimentalTailwindcss": {
-					"stylesheet": ["./www/src/app/globals.css"],
+					// "stylesheet": ["./www/src/app/globals.css"],
 					"attributes": ["class", "className"],
 					"functions": ["clsx", "cn"],
 					"preserveWhitespace": true,
@@ -28,7 +28,7 @@
 	"singleAttributePerLine": true,
 	"experimentalSortImports": {
 		"groups": [
-			["side-effect"],
+			// ["side-effect"],
 			["builtin"],
 			["external", "type-external"],
 			["internal", "type-internal"],
